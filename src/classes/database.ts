@@ -56,7 +56,7 @@ export async function storeProcedure(parameters: any): Promise<any> {
             const [rows, fields] = await conn.query(query, sql)
             conn.end()
             return resolve(rows)
-        } catch (error) {
+        } catch (error: any) {
             conn.end()
             console.log('error result sp', error)
             if(error.code === 'ER_SP_DOES_NOT_EXIST'){
