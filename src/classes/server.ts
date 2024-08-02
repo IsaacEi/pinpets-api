@@ -5,8 +5,6 @@ import cros from 'cors';
 import socketIO from 'socket.io';
 import http from 'http';
 import * as socket from '../sockets/sockets';
-import functions from 'firebase-functions';
-const { onRequest } = require('firebase-functions/v2/https');
 // RUTAS
 import indexRoutes from '../routes/index.routes';
 import authRoutes from '../routes/auth.routes';
@@ -134,8 +132,6 @@ export default class Server {
 
     public async start( callback: Function ) {
         this.httpServer.listen( this.app.get('port'), callback() );
-        exports.widgets = onRequest(this.httpServer);
-        
     }
 
     /* async start() {
