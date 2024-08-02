@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title th:remove="all">Bienvenida</title>
+  <meta http-equiv="Content-Type" content="text/html charset=UTF-8"/>
+
+  <style>
+    body{
+      font-family: Helvetica, Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+    }
+
+    table{
+      display: inline-block;
+      margin-left: auto;
+      margin-right: auto;
+      width: 100%;
+      text-align: center;
+    }
+
+    .titulo{
+      color: #126E97;
+      font-size: 32px;
+    }
+
+    #main{
+      margin: 10px;
+      height: 900px;
+    }
+
+    .saludo{
+      color: #42606E;
+      font-size: 22px;
+      font-weight: 100;
+    }
+
+    .preferencia{
+      background-color: #D5EEED;
+      color: #42606E;
+      font-size: 19px;
+      height: 60px;
+    }
+
+    .contacto{
+      background-color: #F5F5F5;
+      color: #42606E;
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .font-weight{
+      font-weight: 100;
+    }
+
+     #cotizar{
+      background-color: #126E97;
+      color: #FFFFFF;
+      font-size: 26px;
+      font-family: Helvetica, Arial, sans-serif;
+      border-radius: 10px 10px 10px 10px;
+      height: 73px;
+      width: 270px;
+    }
+
+    #comparar{
+      color: #126E97;
+      font-size: 26px;
+    }
+
+    #funciones{
+      color: #42606E;
+      font-size: 22px;
+    }
+
+    #footer table{
+      display: table;
+    }
+
+    #link-alivean{
+      font-size: 16px;
+       margin: 10px;
+    }
+
+    #link-politics{
+      font-size: 14px;
+      margin: 10px;
+    }
+
+  </style>
+</head>
+<body>
+
+<table background="https://s3.us-east-2.amazonaws.com/pictures-email/patron.png" style="height: 120px">
+  <tr>
+    <th width="2000">
+      <img width="150" height="140"
+           src="https://s3.us-east-2.amazonaws.com/pictures-email/logo200.png">
+    </th>
+  </tr>
+</table>
+
+<div id="main">
+
+  <table>
+    <tr>
+      <th class="titulo" height="100" width="2000">
+        ¡Bienvenido a Alivean!
+      </th>
+    </tr>
+    <tr>
+      <th class="saludo" height="100" width="2000">
+        ¡Hola <span th:text="${recipientName}"></span>, muchas gracias por descargar Alivean!
+      </th>
+    </tr>
+    <tr>
+      <th class="saludo" height="100" width="2000">
+        <form action="http://alivean.com">
+          <button class="btn" id="cotizar" type="submit">
+            ¡Realiza tu primer <br>cotización!
+          </button>
+        </form>
+      </th>
+    </tr>
+    <tr>
+      <th class="saludo" height="100" width="2000">
+        <p id="comparar">Comprar tus medicamentos nunca fue más sencillo:</p>
+      </th>
+    </tr>
+    <tr>
+      <th class="saludo" height="100" width="2000">
+        <img src="https://s3.us-east-2.amazonaws.com/pictures-email/magnifying+glass.png">
+        <p class="py-4">Encuentra todos los medicamentos de tu receta.</p>
+      </th>
+    </tr>
+    <tr>
+      <th class="saludo" height="100" width="2000">
+        <img src="https://s3.us-east-2.amazonaws.com/pictures-email/location.png">
+        <p class="py-4">Nuestro cotizador buscará y te ofrecerá las mejores opciones
+          cerca
+          de ti.</p>
+      </th>
+    </tr>
+  </table>
+
+</div>
+
+<div id="footer">
+  <table class="preferencia">
+    <tr>
+      <th width="2000" height="50" class="font-weight">
+        ¡Muchas gracias por tu preferencia!
+      </th>
+    </tr>
+  </table>
+
+  <table class="contacto">
+    <tr>
+      <th class="font-weight" height="100">
+        Alivean S.A. de C.V. Benjamín Hill 1, piso 1 - interior 155 Col. Hipódromo Condesa, 06170,
+        CDMX.
+      </th>
+    </tr>
+    <tr>
+      <th height="50" class="font-weight">
+        Síguenos en nuestras redes sociales
+      </th>
+    </tr>
+  </table>
+
+  <table class="contacto" height="50">
+    <tr>
+      <th width="45%" style="text-align:right">
+        <a href="https://www.linkedin.com/company/alivean/">
+          <img width="30" height="30" alt="linkedIn"
+               src="https://s3.us-east-2.amazonaws.com/pictures-email/linkedin.png">
+        </a>
+      </th>
+      <th width="10%"></th>
+      <th width="45%" style="text-align:left">
+        <a href="https://www.facebook.com/AliveanConnectedHealth">
+          <img width="30" height="30" alt="face"
+               src="https://s3.us-east-2.amazonaws.com/pictures-email/Facebook.png">
+        </a>
+      </th>
+    </tr>
+  </table>
+
+  <table class="contacto">
+    <tr>
+      <th class="font-weight" id="link-alivean">
+        <a href="https://www.alivean.com/">www.alivean.com</a>
+      </th>
+    </tr>
+  </table>
+
+  <table class="contacto">
+    <tr id="link-politics" height="50" >
+      <th class="font-weight" width="45%" style="text-align:right">
+        <a href="https://www.alivean.com/politica.html#aviso">Aviso de privacidad</a>
+      </th>
+      <th width="10%"></th>
+      <th class="font-weight" width="45%" style="text-align:left">
+        <a href="https://www.alivean.com/">Términos y condiciones</a>
+      </th>
+    </tr>
+  </table>
+
+</div>
+</body>
+</html>
