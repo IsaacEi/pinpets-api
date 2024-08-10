@@ -15,8 +15,6 @@ export async function login(req: Request, res: Response): Promise<Response> {
         };
         const sp = await storeProcedure(data);
         const dataDB = sp[0][0];
-        console.log(dataDB);
-        
         // No existe email
         if (!dataDB) {
             return res.status(200).json({ 
@@ -24,14 +22,12 @@ export async function login(req: Request, res: Response): Promise<Response> {
                 mensaje: 'Cliente no registrado en el sistema'
             });
         }
-        /* const isCompare = Methods.comparePassword({ paswordDB: dataDB.pass, password: data.vpass });
-        // Contraseñas diferentes
-        if (!isCompare) {
+        if (dataDB.id === 0) {
             return res.status(200).json({ 
                 estatus: false,
                 mensaje: 'Cliente no registrado en el sistema'
             });
-        } */
+        }
         // Genera token
         dataDB.pass = ':)';
         const token = Methods.getJwtToken(dataDB);
@@ -231,6 +227,8 @@ export async function activar(req: any, res: Response): Promise<Response> {
 
 // Obtener cliente
 export async function obtener(req: any, res: Response): Promise<Response> {
+    console.log('req.usuario', req.usuario);
+    
     try {
         const data = {
             storeProcedure: 'getperfil',
