@@ -23,11 +23,11 @@ router.use( expressFileUpload() );
 router.post( '/actualizar', verifyToken, actualizar );
 router.post( '/id', verifyToken, obtener );
 // app
-router.post( '/faqs', faqs );
+router.get( '/faqs', faqs );
 router.post( '/tienda', tiendaOnline );
-router.post( '/sitio', sitioWeb );
-router.post( '/terminos', terminosYCondiciones );
-router.post( '/contacto', contacto );
+router.get( '/sitio', sitioWeb );
+router.get( '/terminos', terminosYCondiciones );
+router.get( '/contacto', contacto );
 router.post( '/quienes-somos', quienesSomos );
 router.post( '/home', home );
 router.post( '/footer', footer );

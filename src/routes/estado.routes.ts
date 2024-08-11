@@ -5,6 +5,6 @@ import { lista } from '../controllers/estado.controller';
 const router = Router();
 
 // app
-router.post( '/lista', lista );
+router.get( '/lista', lista );
 
 export default router;

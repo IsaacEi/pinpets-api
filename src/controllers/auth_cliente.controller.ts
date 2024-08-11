@@ -15,17 +15,19 @@ export async function login(req: Request, res: Response): Promise<Response> {
         };
         const sp = await storeProcedure(data);
         const dataDB = sp[0][0];
+        console.log('dataDB', dataDB);
+        
         // No existe email
         if (!dataDB) {
             return res.status(200).json({ 
                 estatus: false,
-                mensaje: 'Cliente no registrado en el sistema'
+                mensaje: 'Cliente no registrado'
             });
         }
-        if (dataDB.id === 0) {
+        if (dataDB.error === 1) {
             return res.status(200).json({ 
                 estatus: false,
-                mensaje: 'Cliente no registrado en el sistema'
+                mensaje: dataDB.mensaje
             });
         }
         // Genera token
@@ -38,7 +40,7 @@ export async function login(req: Request, res: Response): Promise<Response> {
             return res.status(200).json({ 
                 estatus: true,
                 activo: false,
-                mensaje: 'Código enviado al email registrado en el sistema',
+                mensaje: 'Código enviado al email registrado',
                 token: token,
             });
         }
@@ -53,7 +55,7 @@ export async function login(req: Request, res: Response): Promise<Response> {
         console.log('login-error:', err);
         return res.status(200).json({ 
             estatus: false,
-            mensaje: '!Error¡ cliente no registrado en el sistema'
+            mensaje: '!Error¡ cliente no registrado'
         });
     }
 }
@@ -120,7 +122,7 @@ export async function registro(req: Request, res: Response): Promise<Response> {
         if (!dataDB) {
             return res.status(200).json({ 
                 estatus: false,
-                mensaje: 'Cliente no registrado en el sistema'
+                mensaje: 'Cliente no registrado'
             });
         }
         dataDB.pass = ':)';
@@ -132,7 +134,7 @@ export async function registro(req: Request, res: Response): Promise<Response> {
             return res.status(200).json({ 
                 estatus: true,
                 activo: false,
-                mensaje: 'Código enviado al email registrado en el sistema',
+                mensaje: 'Código enviado al email registrado',
                 token: token,
             });
         }
@@ -146,7 +148,7 @@ export async function registro(req: Request, res: Response): Promise<Response> {
         console.log('registro-err:', err);
         return res.status(200).json({ 
             status: false,
-            mensaje: '!Error¡ al registrar cliente en el sistema'
+            mensaje: '!Error¡ al registrar cliente'
         });
     }
 }
@@ -164,7 +166,7 @@ export async function cambiarPass(req: any, res: Response): Promise<Response> {
         if (!dataDB) {
             return res.status(200).json({ 
                 estatus: false,
-                mensaje: 'Cliente no encontrado en el sistema'
+                mensaje: 'Cliente no encontrado'
             });
         }
         dataDB.pass = ':)'
@@ -198,7 +200,7 @@ export async function activar(req: any, res: Response): Promise<Response> {
         if (!dataDB) {
             return res.status(200).json({ 
                 estatus: false,
-                mensaje: 'Cliente no encontrado en el sistema'
+                mensaje: 'Cliente no encontrado'
             });
         }
         if (dataDB.error === 1) {
@@ -231,7 +233,7 @@ export async function obtener(req: any, res: Response): Promise<Response> {
     
     try {
         const data = {
-            storeProcedure: 'getperfil',
+            storeProcedure: 'perfil',
             vid: req.usuario.id
         }; 
         const sp = await storeProcedure(data);
@@ -241,7 +243,7 @@ export async function obtener(req: any, res: Response): Promise<Response> {
         if (!dataDB) {
             return res.status(200).json({ 
                 estatus: false,
-                mensaje: 'Cliente no encontrado en el sistema'
+                mensaje: 'Cliente no encontrado'
             });
         }
         dataDB.pass = ':)';
@@ -287,7 +289,7 @@ export async function actualizar(req: any, res: Response): Promise<Response> {
         if (!dataDB) {
             return res.status(200).json({ 
                 estatus: false,
-                mensaje: 'Cliente no encontrado en el sistema'
+                mensaje: 'Cliente no encontrado'
             });
         }
         dataDB.pass = ':)';
@@ -320,7 +322,7 @@ export async function codigoMail(req: any, res: Response): Promise<Response> {
         if (!dataDB) {
             return res.status(200).json({ 
                 estatus: false,
-                mensaje: 'Cliente no registrado en el sistema'
+                mensaje: 'Cliente no registrado'
             });
         }
         
@@ -328,13 +330,13 @@ export async function codigoMail(req: any, res: Response): Promise<Response> {
         await Methods.sendMailUserVerifyAccount(dataDB);
         return res.status(200).json({ 
             estatus: true,
-            mensaje: 'Código enviado al correo registrado en el sistema'
+            mensaje: 'Código enviado al correo registrado'
         });
     } catch (err) {
         console.log('codigoMail-error:', err);
         return res.status(200).json({ 
             estatus: false,
-            mensaje: '!Error¡ cliente no registrado en el sistema'
+            mensaje: '!Error¡ cliente no registrado'
         });
     }
 }
@@ -355,7 +357,7 @@ export async function cambiarPassMail(req: Request, res: Response): Promise<Resp
         if (!dataDB) {
             return res.status(200).json({ 
                 estatus: false,
-                mensaje: 'Cliente no registrado en el sistema'
+                mensaje: 'Cliente no registrado'
             });
         }
 
@@ -367,7 +369,7 @@ export async function cambiarPassMail(req: Request, res: Response): Promise<Resp
         await Methods.sendMailUserUpdatePassword(context);
         return res.status(200).json({
             estatus: true,
-            mensaje: 'Contraseña enviada al correo registrado en el sistema'
+            mensaje: 'Contraseña enviada al correo registrado'
         });
     } catch (err) {
         console.log('cambiarPassMail-error:', err);

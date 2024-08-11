@@ -41,7 +41,7 @@ export async function crear(req: any, res: Response): Promise<Response> {
         console.log('crear-err:', err);
         return res.status(400).json({ 
             status: false,
-            mensaje: 'Error al crear mascota en el sistema'
+            mensaje: 'Error al crear mascota'
         });
     }
 }
@@ -69,7 +69,7 @@ export async function actualizar(req: any, res: Response): Promise<Response> {
         if (!dataDB) {
             return res.status(200).json({ 
                 estatus: false,
-                mensaje: 'Mascota no encontrada en el sistema'
+                mensaje: 'Mascota no encontrada'
             });
         }
         if (dataDB.error === 1) {
@@ -103,7 +103,7 @@ export async function borrar(req: Request, res: Response): Promise<Response> {
         if (!dataDB) {
             return res.status(200).json({ 
                 estatus: false,
-                mensaje: 'Categoria no encontrada en el sistema'
+                mensaje: 'Categoria no encontrada'
             });
         }
         if (dataDB.correcto === 0) {
@@ -137,7 +137,7 @@ export async function obtener(req: Request, res: Response): Promise<Response> {
         if (!dataDB) {
             return res.status(200).json({ 
                 estatus: false,
-                mensaje: 'Mascota no encontrada en el sistema'
+                mensaje: 'Mascota no encontrada'
             });
         }
         return res.status(200).json({

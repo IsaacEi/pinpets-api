@@ -22,7 +22,7 @@ router.post( '/codigo-mail', codigoMail );
 router.post( '/activar', verifyToken, activar );
 router.post( '/cambiar-pass', verifyToken, cambiarPass );
 router.post( '/actualizar', verifyToken, actualizar );
-router.post( '/obtener', verifyToken, obtener );
+router.get( '/obtener', verifyToken, obtener );
 router.get( '/token', verifyToken, token );
 router.get( '/image', image);
 

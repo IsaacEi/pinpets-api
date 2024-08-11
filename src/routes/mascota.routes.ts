@@ -14,6 +14,6 @@ router.post( '/crear', verifyToken, crear );
 router.post( '/actualizar', verifyToken, actualizar );
 router.post( '/borrar', verifyToken, borrar );
 router.post( '/obtener', verifyToken, obtener );
-router.post( '/lista', verifyToken, lista );
+router.get( '/lista', verifyToken, lista );
 
 export default router;
