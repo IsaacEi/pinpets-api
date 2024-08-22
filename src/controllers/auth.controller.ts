@@ -4,190 +4,359 @@ import bcrypt from 'bcryptjs'
 import { storeProcedure } from '../classes/database';
 import Methods from '../classes/methods';
 
-// Login
+// Login cliente
 export async function login(req: Request, res: Response): Promise<Response> {
     try {
-        const data = {
-            storeProcedure: 'sp_login',
-            vmail: req.body.mail,
-            vpass: req.body.pass
+        const { mail, pass } = req.body;
+        const body = {
+            storeProcedure: 'login',
+            vmail: mail,
+            vpass: pass
         };
-        const sp = await storeProcedure(data);
-        const userDB = sp[0][0];
+        const sp = await storeProcedure(body);
+        const data = sp[0][0];
         // No existe email
-        if (!userDB) {
+        if (!data) {
             return res.status(200).json({ 
                 estatus: false,
-                mensaje: 'Usuario no registrado en el sistema'
+                mensaje: 'Cliente no registrado'
             });
         }
-        //const passEncr =  bcrypt.hashSync( data.vpass, 10);
-        //console.log('passEncr', passEncr);
-        const isCompare = Methods.comparePassword({ paswordDB: userDB.pass, password: data.vpass });
-        // Contraseñas diferentes
-        if (!isCompare) {
+        if (data.error === 1) {
             return res.status(200).json({ 
                 estatus: false,
-                mensaje: 'Usuario no registrado en el sistema'
-            });
-        }
-        // Usuario no activado
-        if (userDB.activo === 0) {
-            return res.status(200).json({ 
-                estatus: false,
-                mensaje: 'Usuario no registrado en el sistema'
+                mensaje: data.mensaje
             });
         }
         // Genera token
-        userDB.pass = ':)';
-        const token = Methods.getJwtToken(userDB);
-
+        data.pass = ':)';
+        const token = Methods.getJwtToken(data);
+        // Cliente no activado
+        if (data.estatus === 'I') {
+            // Envia correo para verificar cuenta
+            await Methods.sendMailUserVerifyAccount(data);
+            return res.status(200).json({ 
+                estatus: true,
+                activo: false,
+                mensaje: 'Código enviado al email registrado',
+                token,
+            });
+        }
         return res.status(200).json({
             estatus: true,
-            token: token
+            activo: true,
+            data,
+            token,
+            mensaje: `Bienvenido ${ data.nombre }`
         });
     } catch (err) {
         console.log('login-error:', err);
-        return res.status(400).json({ 
+        return res.status(200).json({ 
             estatus: false,
-            mensaje: 'Error usuario no registrado en el sistema'
+            mensaje: '!Error¡ cliente no registrado'
         });
     }
 }
 
-// Crear usuario
-export async function crear(req: Request, res: Response): Promise<Response> {
+// Registrar cliente
+export async function registro(req: Request, res: Response): Promise<Response> {
     try {
-        const dataExist = {
-            storeProcedure: 'sp_login',
-            vmail: req.body.mail, 
+        const { 
+            nombre,
+            apellido,
+            contrasena,
+            telefono,
+            fechanac,
+            mail,
+            genero,
+            cp,
+            estado,
+            municipio,
+            colonia,
+            calle,
+            numeroe,
+            numeroi,
+            foto,
+            nacionalidad,
+            ne_nacionalidad,
+            tipo
+        } = req.body;
+        let body = {
+            storeProcedure: 'registro',
+            vnombre: nombre,
+            vapellido: apellido,
+            vcontrasena: contrasena,
+            /* vcontrasena: bcrypt.hashSync( contrasena, 10), */
+            vtelefono: telefono,
+            vmail: mail,
+            vfechanac: fechanac,
+            vgenero: genero,
+            vcp: cp,
+            vestado: estado,
+            vmunicipio: municipio,
+            vcolonia: colonia,
+            vcalle: calle,
+            vnumeroe: numeroe,
+            vnumeroi: numeroi,
+            vfoto: foto,
+            vnacionalidad: nacionalidad,
+            vne_nacionalidad: ne_nacionalidad,
+            vtipo: tipo,
         };
-        const data = {
-            storeProcedure: 'sp_crear_usuario',
-            vnombre: req.body.nombre,
-            vmail: req.body.mail,
-            vpass: bcrypt.hashSync( req.body.pass, 10)
-        };
-        const spe = await storeProcedure(dataExist);
-        const userE = spe[0][0];
-        // Valida que usuario no exista
-        if (userE) {
-            return res.status(200).json({ 
-                ok: false,
-                mensaje: 'Usuario ya existe en el sistema'
-            });
-        }
-        const sp = await storeProcedure(data);
-        const userDB = sp[0][0];
-        if (!userDB) {
+        /* const address = `calle ${ data.vcalle } #${ data.vnumeroe }, col. ${ data.vcolonia }, ${data.vcp}, Méx`;
+        const dataGeometry = await Methods.getGoogleMapsGeometry(address);
+        if (!dataGeometry.estatus) {
             return res.status(200).json({ 
                 estatus: false,
-                mensaje: 'Usuario no creado'
+                mensaje: dataGeometry.mensaje
+            })
+        }
+
+        data.vlatitud = dataGeometry.data.location.lat;
+        data.vlongitud = dataGeometry.data.location.lng; */
+
+        const sp = await storeProcedure(body);
+        let data = sp[0][0];
+        if (!data) {
+            return res.status(200).json({ 
+                estatus: false,
+                mensaje: 'Cliente no registrado'
             });
         }
-        // Genera token
-        userDB.pass = ':)'
-        const token = Methods.getJwtToken(userDB)
+        data.pass = ':)';
+        const token = Methods.getJwtToken(data);
+        // Cliente no activado
+        if (data.estatus === 'I') {
+            // Envia correo para verificar cuenta
+            await Methods.sendMailUserVerifyAccount(data);
+            return res.status(200).json({ 
+                estatus: true,
+                activo: false,
+                mensaje: 'Código enviado al email registrado',
+                token,
+            });
+        }
         return res.status(200).json({
             estatus: true,
-            token: token
+            token,
+            activo: true,
+            mensaje: 'Cliente registrado correctamente'
         });
     } catch (err) {
         console.log('registro-err:', err);
-        return res.status(400).json({ 
+        return res.status(200).json({ 
             status: false,
-            mensaje: 'Error al crear usuario en el sistema'
+            mensaje: '!Error¡ al registrar cliente'
         });
     }
 }
 
-// Actualizar usuario
-export async function actualizar(req: Request, res: Response): Promise<Response> {  
+// Actualizar la contraseña del cliente
+export async function cambiarPass(req: any, res: Response): Promise<Response> {  
     try {
-        const data = {
-            storeProcedure: 'sp_actualizar_usuario',
-            vid: req.body.id,
-            vnombre: req.body.nombre,
-            vactivo: req.body.activo
-        };         
-        const sp = await storeProcedure(data);
-        let userDB = sp[0][0];
-        if (!userDB) {
-            return res.status(200).json({ 
-                estatus: false,
-                mensaje: 'Usuario no encontrado en el sistema'
-            });
-        }
-        userDB.pass = ':)';
-        const token = Methods.getJwtToken(userDB)
-        return res.status(200).json({
-            estatus: true,
-            mensaje: 'Usuario actualizado correctamente',
-            token: token
-        });
-    } catch (err) {
-        console.log('usuario-error:', err);
-        return res.status(400).json({ 
-            estatus: false,
-            mensaje: 'Error al actualizar usuario'
-        });
-    }
-}
-
-// Obtener usuario
-export async function obtener(req: Request, res: Response): Promise<Response> {
-    try {
-        const data = {
-            storeProcedure: 'sp_obtener_usuario',
-            vid: req.body.id
-        }; 
-        const sp = await storeProcedure(data);
-        let userDB = sp[0][0];
-        if (!userDB) {
-            return res.status(200).json({ 
-                estatus: false,
-                mensaje: 'Usuario no encontrado en el sistema'
-            });
-        }
-        userDB.pass = ':)';
-        return res.status(200).json({
-            estatus: true,
-            data: userDB
-        });
-    } catch (err) {
-        console.log('usuario-error:', err);
-        return res.status(400).json({ 
-            estatus: false,
-            mensaje: 'Error usario no encontrado'
-        });
-    }
-}
-
-// Actualizar la contraseña del usuario
-export async function cambiarPass(req: Request, res: Response): Promise<Response> {  
-    try {
-        const data = {
-            storeProcedure: 'sp_cambiar_pass_usuario',
-            vid: req.body.id,
-            vpass: bcrypt.hashSync( req.body.pass, 10),
+        const { id } = req.usuario;
+        const { pass } = req.body;
+        const body = {
+            storeProcedure: 'sp_cambiar_pass_cliente',
+            vid: id,
+            vpass: bcrypt.hashSync( pass, 10),
         };
-        const sp = await storeProcedure(data);
-        const userDB = sp[0][0];
-        if (!userDB) {
+        const sp = await storeProcedure(body);
+        const data = sp[0][0];
+        if (!data) {
             return res.status(200).json({ 
                 estatus: false,
-                mensaje: 'Usuario no encontrado en el sistema'
+                mensaje: 'Cliente no encontrado'
             });
         }
+        data.pass = ':)'
+        // Genera token
+        const token = Methods.getJwtToken(data)
         return res.status(200).json({
             estatus: true,
+            data,
+            token,
             mensaje: 'Contraseña actualizada correctamente'
         });
     } catch (err) {
         console.log('cambiarPass-error:', err);
+        return res.status(200).json({ 
+            estatus: false,
+            mensaje: '!Error¡ contraseña no actulizada'
+        });
+    }
+}
+
+// Activar cliente
+export async function activar(req: any, res: Response): Promise<Response> {  
+    try {
+        const { id } = req.usuario;
+        const { codigo } = req.body;
+        const body = {
+            storeProcedure: 'activar',
+            vid: id,
+            vcodigo: codigo,
+        };
+        const sp = await storeProcedure(body);
+        const data = sp[0][0];
+        if (!data) {
+            return res.status(200).json({ 
+                estatus: false,
+                mensaje: 'Cliente no encontrado'
+            });
+        }
+        if (data.error === 1) {
+            return res.status(200).json({ 
+                estatus: false,
+                mensaje: data.mensaje
+            })
+        }
+        data.pass = ':)';
+        // Genera token
+        const token = Methods.getJwtToken(data)
+        return res.status(200).json({
+            estatus: true,
+            data,
+            token,
+            mensaje: 'Cliente activado correctamente'
+        });
+    } catch (err) {
+        console.log('activar-error:', err);
+        return res.status(200).json({ 
+            estatus: false,
+            mensaje: '!Error¡ Cliente no activado'
+        });
+    }
+}
+
+// Obtener cliente
+export async function obtener(req: any, res: Response): Promise<Response> {
+    try {
+        const { id } = req.usuario;
+        const body = {
+            storeProcedure: 'perfil',
+            vid: id
+        }; 
+        const sp = await storeProcedure(body);
+        let data = sp[0][0];
+        if (!data) {
+            return res.status(200).json({ 
+                estatus: false,
+                mensaje: 'Cliente no encontrado'
+            });
+        }
+        data.pass = ':)';
+        return res.status(200).json({
+            estatus: true,
+            data
+        });
+    } catch (err) {
+        console.log('cliente-error:', err);
         return res.status(400).json({ 
             estatus: false,
-            mensaje: 'Error contraseña no actulizada'
+            mensaje: 'Error cliente no encontrado'
+        });
+    }
+}
+
+// Actualizar cliente
+export async function actualizar(req: any, res: Response): Promise<Response> {  
+    try {
+        const { id } = req.usuario;
+        const { 
+            nombre, 
+            apellido_pat, 
+            genero, 
+            fecha_nac,
+            tel,
+            foto,
+            id_direccion,
+            calle,
+            numero_ext,
+            numero_int,
+            colonia,
+            cp,
+            id_estado,
+            id_municipio,
+            latitud,
+            longitud,
+            tipo_cliente
+        } = req.body;
+        const body = {
+            storeProcedure: 'sp_actualizar_cliente',
+            vid: id,
+            vnombre: nombre,
+            vapellido_pat: apellido_pat,
+            vgenero: genero,
+            vfecha_nac: fecha_nac,
+            vtel: tel,
+            vfoto: foto,
+            vid_direccion: id_direccion,
+            vcalle: calle,
+            vnumero_ext: numero_ext,
+            vnumero_int: numero_int,
+            vcolonia: colonia,
+            vcp: cp,
+            vid_estado: id_estado,
+            vid_municipio: id_municipio,
+            vlatitud: latitud,
+            vlongitud: longitud,
+            vtipo_cliente: tipo_cliente,
+        };         
+        const sp = await storeProcedure(body);
+        let data = sp[0][0];
+        if (!data) {
+            return res.status(200).json({ 
+                estatus: false,
+                mensaje: 'Cliente no encontrado'
+            });
+        }
+        data.pass = ':)';
+        const token = Methods.getJwtToken(data)
+        return res.status(200).json({
+            estatus: true,
+            data,
+            token,
+            mensaje: 'Cliente actualizar correctamente'
+        });
+    } catch (err) {
+        console.log('actualizarPerfil-error:', err);
+        return res.status(200).json({ 
+            estatus: false,
+            mensaje: '!Error¡ al actualizar perfil del cliente'
+        });
+    }
+}
+
+// Vuelve enviar el codigo por correo
+export async function codigoMail(req: any, res: Response): Promise<Response> {
+    try {
+        const { mail } = req.body;
+        const body = {
+            storeProcedure: 'login',
+            vmail: mail
+        };
+        const sp = await storeProcedure(body);
+        const data = sp[0][0];
+        // No existe email
+        if (!data) {
+            return res.status(200).json({ 
+                estatus: false,
+                mensaje: 'Cliente no registrado'
+            });
+        }
+        
+        // Envia correo para verificar cuenta
+        await Methods.sendMailUserVerifyAccount(data);
+        return res.status(200).json({ 
+            estatus: true,
+            mensaje: 'Código enviado al correo registrado'
+        });
+    } catch (err) {
+        console.log('codigoMail-error:', err);
+        return res.status(200).json({ 
+            estatus: false,
+            mensaje: '!Error¡ cliente no registrado'
         });
     }
 }
@@ -195,33 +364,33 @@ export async function cambiarPass(req: Request, res: Response): Promise<Response
 // Genera una contraseña al azar y lo envia por email
 export async function cambiarPassMail(req: Request, res: Response): Promise<Response> {
     try {
+        const { mail } = req.body;
         // Se crea una nueva contraseña y se actualiza
         const newPassword = await Methods.newPassword();
-        const data = {
-            storeProcedure: 'sp_cambiar_pass_mail_usuario',
-            vmail: req.body.mail,
+        const body = {
+            storeProcedure: 'sp_cambiar_pass_cliente_mail',
+            vmail: mail,
             vpass: bcrypt.hashSync( newPassword, 10),
         };
-        const sp = await storeProcedure(data);
-        const userDB = sp[0][0];
+        const sp = await storeProcedure(body);
+        const data = sp[0][0];
         // No existe email
-        if (!userDB) {
+        if (!data) {
             return res.status(200).json({ 
                 estatus: false,
-                mensaje: 'Usuario no registrado en el sistema'
+                mensaje: 'Cliente no registrado'
             });
         }
 
         const context = {
-            email: req.body.mail,
+            email: mail,
             password: newPassword
         }
-
+        // Envia Correo para recuperar contraseña
         await Methods.sendMailUserUpdatePassword(context);
-
         return res.status(200).json({
             estatus: true,
-            mensaje: 'Contraseña enviada al email registrado en el sistema'
+            mensaje: 'Contraseña enviada al correo registrado'
         });
     } catch (err) {
         console.log('cambiarPassMail-error:', err);
@@ -235,10 +404,10 @@ export async function cambiarPassMail(req: Request, res: Response): Promise<Resp
 // Token
 export async function token(req: any, res: Response): Promise<Response> {
     try {
-        const usuario = req.usuario
+        const cliente = req.usuario;
         return res.status(200).json({
             estatus: true,
-            usuario: usuario
+            cliente
         })
     } catch (err) {
         console.log('token-error:', err);
@@ -252,6 +421,7 @@ export async function token(req: any, res: Response): Promise<Response> {
 // Imagen
 export async function image(req: any, res: any): Promise<Response> {
     try {
+        // Arma la respuesta y no sabe donde
         /* const tipo = req.params.tipo;
         const foto = req.params.foto;
         const pathImg = path.join( __dirname, `../uploads/${ tipo }/${ foto }` );
@@ -262,11 +432,12 @@ export async function image(req: any, res: any): Promise<Response> {
             const pathImg = path.join( __dirname, `../uploads/no-img.jpg` );
             res.sendFile( pathImg );
         } */
+
         const pathImg = path.join( __dirname, `../uploads/user.png` );
         return res.sendFile( pathImg );
     } catch (error) {
         return res.status(400).json({ 
-            ok: false,
+            estatus: false,
             mensaje: error
         })
     }

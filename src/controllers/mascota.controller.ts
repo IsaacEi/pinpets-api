@@ -4,33 +4,54 @@ import { storeProcedure } from '../classes/database';
 // Crear mascota
 export async function crear(req: any, res: Response): Promise<Response> {
     try {
-        const data = {
-            storeProcedure: 'sp_crear_mascota',
-            vid_cliente: req.usuario.id,
-            vfoto: req.body.foto,
-            vnombre: req.body.nombre,
-            vid_tipo_mascota: req.body.id_tipo_mascota,
-            vid_raza: req.body.id_raza,
-            vfecha_nac: req.body.fecha_nac,
-            vid_color: req.body.id_color,
-            vid_genero: req.body.id_genero,
-            vid_tamano: req.body.id_tamano,
-            vsenas: req.body.senas,
-            vqr: req.body.qr,
+        const { id } = req.usuario;
+        const { 
+            color,
+            ne_color,
+            fecha_nac,
+            genero,
+            raza,
+            ne_raza,
+            tipo_mascota,
+            ne_tipo_mascota,
+            qr,
+            nombre,
+            senas_particulares,
+            tamano,
+            ne_tamano,
+            idMascota,
+        } = req.body;
+        const body = {
+            storeProcedure: 'nuevaMascota',
+            vcolor: color,
+            vne_color: ne_color,
+            vfecha_nac: fecha_nac,
+            vgenero: genero,
+            vraza: raza,
+            vne_raza: ne_raza,
+            vtipo_mascota: tipo_mascota,
+            vne_tipo_mascota: ne_tipo_mascota,
+            vqr: qr,
+            vnombre: nombre,
+            vsenas_particulares: senas_particulares,
+            vtamano: tamano,
+            vne_tamano: ne_tamano,
+            vusuario: id,
+            vid: idMascota,
         };
         
-        const sp = await storeProcedure(data);
-        const dataDB = sp[0][0];
-        if (!dataDB) {
+        const sp = await storeProcedure(body);
+        const data = sp[0][0];
+        if (!data) {
             return res.status(200).json({ 
                 estatus: false,
                 mensaje: 'Mascota no creada'
             });
         }
-        if (dataDB.error === 1) {
+        if (data.error === 1) {
             return res.status(200).json({ 
                 estatus: false,
-                mensaje: dataDB.mensaje
+                mensaje: data.mensaje
             })
         }
         return res.status(200).json({
@@ -49,33 +70,53 @@ export async function crear(req: any, res: Response): Promise<Response> {
 // Actualizar mascota
 export async function actualizar(req: any, res: Response): Promise<Response> {  
     try {
-        const data = {
-            storeProcedure: 'sp_actualizar_mascota',
-            vid: req.body.id,
-            vid_cliente: req.usuario.id,
-            vfoto: req.body.foto,
-            vnombre: req.body.nombre,
-            vid_tipo_mascota: req.body.id_tipo_mascota,
-            vid_raza: req.body.id_raza,
-            vfecha_nac: req.body.fecha_nac,
-            vid_color: req.body.id_color,
-            vid_genero: req.body.id_genero,
-            vid_tamano: req.body.id_tamano,
-            vsenas: req.body.senas,
-            vqr: req.body.qr,
-        };         
-        const sp = await storeProcedure(data);
-        let dataDB = sp[0][0];
-        if (!dataDB) {
+        const { id } = req.usuario;
+        const { 
+            color,
+            ne_color,
+            fecha_nac,
+            genero,
+            raza,
+            ne_raza,
+            tipo_mascota,
+            ne_tipo_mascota,
+            qr,
+            nombre,
+            senas_particulares,
+            tamano,
+            ne_tamano,
+            idMascota,
+        } = req.body;
+        const body = {
+            storeProcedure: 'nuevaMascota',
+            vcolor: color,
+            vne_color: ne_color,
+            vfecha_nac: fecha_nac,
+            vgenero: genero,
+            vraza: raza,
+            vne_raza: ne_raza,
+            vtipo_mascota: tipo_mascota,
+            vne_tipo_mascota: ne_tipo_mascota,
+            vqr: qr,
+            vnombre: nombre,
+            vsenas_particulares: senas_particulares,
+            vtamano: tamano,
+            vne_tamano: ne_tamano,
+            vusuario: id,
+            vid: idMascota,
+        };
+        const sp = await storeProcedure(body);
+        const data = sp[0][0];
+        if (!data) {
             return res.status(200).json({ 
                 estatus: false,
                 mensaje: 'Mascota no encontrada'
             });
         }
-        if (dataDB.error === 1) {
+        if (data.error === 1) {
             return res.status(200).json({ 
                 estatus: false,
-                mensaje: dataDB.mensaje
+                mensaje: data.mensaje
             })
         }
         return res.status(200).json({
@@ -92,49 +133,18 @@ export async function actualizar(req: any, res: Response): Promise<Response> {
 }
 
 // Borrar mascota
-export async function borrar(req: Request, res: Response): Promise<Response> {
+export async function borrar(req: any, res: Response): Promise<Response> {
     try {
-        const data = {
-            storeProcedure: 'sp_borrar_categoria',
-            vid: req.body.id
+        const { id } = req.usuario;
+        const { idMascota } = req.body;
+        const body = {
+            storeProcedure: 'borrarMascota',
+            vusuario: id,
+            vmascota: idMascota
         }; 
-        const sp = await storeProcedure(data);
-        let dataDB = sp[0][0];
-        if (!dataDB) {
-            return res.status(200).json({ 
-                estatus: false,
-                mensaje: 'Categoria no encontrada'
-            });
-        }
-        if (dataDB.correcto === 0) {
-            return res.status(200).json({ 
-                estatus: false,
-                mensaje: dataDB.mensaje
-            });
-        }
-        return res.status(200).json({
-            estatus: true,
-            mensaje: 'Categoria borrada correctamente'
-        });
-    } catch (err) {
-        console.log('borrar-error:', err);
-        return res.status(400).json({ 
-            estatus: false,
-            mensaje: 'Error al borrar categoria'
-        });
-    }
-}
-
-// Obtener mascota
-export async function obtener(req: Request, res: Response): Promise<Response> {
-    try {
-        const data = {
-            storeProcedure: 'sp_obtener_mascota',
-            vid: req.body.id
-        }; 
-        const sp = await storeProcedure(data);
-        let dataDB = sp[0][0];
-        if (!dataDB) {
+        const sp = await storeProcedure(body);
+        const data = sp[0][0];
+        if (!data) {
             return res.status(200).json({ 
                 estatus: false,
                 mensaje: 'Mascota no encontrada'
@@ -142,7 +152,38 @@ export async function obtener(req: Request, res: Response): Promise<Response> {
         }
         return res.status(200).json({
             estatus: true,
-            data: dataDB
+            mensaje: 'Mascota borrada correctamente'
+        });
+    } catch (err) {
+        console.log('borrar-error:', err);
+        return res.status(400).json({ 
+            estatus: false,
+            mensaje: 'Error al borrar mascota'
+        });
+    }
+}
+
+// Obtener mascota
+export async function obtener(req: any, res: Response): Promise<Response> {
+    try {
+        const { id } = req.usuario;
+        const { idMascota } = req.body;
+        const body = {
+            storeProcedure: 'obtenerMascota',
+            vusuario: id,
+            vidMascota: idMascota
+        }; 
+        const sp = await storeProcedure(body);
+        const data = sp[0][0];
+        if (!data) {
+            return res.status(200).json({ 
+                estatus: false,
+                mensaje: 'Mascota no encontrada'
+            });
+        }
+        return res.status(200).json({
+            estatus: true,
+            data
         });
     } catch (err) {
         console.log('obtener-error:', err);
@@ -156,15 +197,16 @@ export async function obtener(req: Request, res: Response): Promise<Response> {
 // Obtener lista de mascotas
 export async function lista(req: any, res: Response): Promise<Response> {
     try {
-        const data = {
+        const { id } = req.usuario;
+        const body = {
             storeProcedure: 'mascotas',
-            vusuario: req.usuario.id,
+            vusuario: id,
         }; 
-        const sp = await storeProcedure(data);
-        let userDB = sp[0];
+        const sp = await storeProcedure(body);
+        const data = sp[0];
         return res.status(200).json({
             estatus: true,
-            data: userDB
+            data
         });
     } catch (err) {
         console.log('lista-error:', err);

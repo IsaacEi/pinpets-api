@@ -11,8 +11,8 @@ import {
 const router = Router();
 
 router.post( '/crear', verifyToken, crear );
-router.post( '/actualizar', verifyToken, actualizar );
-router.post( '/borrar', verifyToken, borrar );
+router.put( '/actualizar', verifyToken, actualizar );
+router.delete( '/borrar', verifyToken, borrar );
 router.post( '/obtener', verifyToken, obtener );
 router.get( '/lista', verifyToken, lista );
 

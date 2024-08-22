@@ -16,17 +16,16 @@ export const verifyToken = async(req: any, res: Response, next: NextFunction) =>
         token = await Methods.extractToken(req);
         //decodifica el token 
         decoded = await Methods.verifyToken(token);
-        //console.log('decoded', decoded);
         if (!decoded) {
           return res.status( 401 ).json({
-            ok: false,
+            estatus: false,
             mensaje: 'Not authorized.'
           });
         }
         //
         if (!decoded.usuario) {
           return res.status( 401 ).json({
-            ok: false,
+            estatus: false,
             mensaje: 'Not authorized.'
           });
         }
@@ -35,7 +34,7 @@ export const verifyToken = async(req: any, res: Response, next: NextFunction) =>
         next();   
     } catch (error) {
         return res.status( 401 ).json({
-          ok: false,
+          estatus: false,
           mensaje: 'Not authorized.'
         });
     }

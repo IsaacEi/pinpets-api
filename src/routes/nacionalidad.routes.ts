@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { lista } from '../controllers/estado.controller';
+import { lista } from '../controllers/nacionalidad.controller';
 
 const router = Router();
 

@@ -41,14 +41,6 @@ export default class Configurations {
         return process.env.SECRET;
     }
 
-    getNexmoApi() {
-        return process.env.NEXMO_API;
-    }
-
-    getNexmoSecret() {
-        return process.env.NEXMO_SECRET;
-    }
-
     getEmail() {
         return {
             service: process.env.EMAIL_SERVICE,
@@ -61,10 +53,6 @@ export default class Configurations {
 
     getMapsApi() {
         return process.env.MAPS_API;
-    }
-
-    getRedirectUrlOpenpay() {
-        return process.env.REDIRECT_URL_OPENPAY;
     }
 
 }

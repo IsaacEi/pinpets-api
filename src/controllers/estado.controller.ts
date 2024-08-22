@@ -1,21 +1,20 @@
 import { Request, Response } from 'express';
 import { storeProcedure } from '../classes/database';
 
-
-// Lista de estados y municipos filtrados por el codigo postal
+// Lista de estados
 export async function lista(req: Request, res: Response): Promise<Response> {
     try {
-        const data = {
+        const body = {
             storeProcedure: 'ciudades'
         }; 
-        const sp = await storeProcedure(data);
-        let dataDB = sp[0];
+        const sp = await storeProcedure(body);
+        const data = sp[0];
         return res.status(200).json({
             estatus: true,
-            data: dataDB
+            data
         });
     } catch (err) {
-        console.log('listaCP-error:', err);
+        console.log('lista-error:', err);
         return res.status(400).json({ 
             estatus: false,
             mensaje: 'Error! estados no encontrados'
