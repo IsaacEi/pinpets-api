@@ -26,11 +26,11 @@ export async function fileUpload(req: Request, res: Response): Promise<any> {
             mensaje: 'No es una extensión permitida'
         });
     }
-    // Path para guardar la imagen
-    const pathImg = path.join( __dirname, `../public/${ folder }/${imagen}`);
     const pathFolder = path.join( __dirname, `../public/${ folder }`);
     // Crear la carpeta si no existe
     await createFolder(pathFolder);
+    // Path para guardar la imagen
+    const pathImg = `${pathFolder}/${imagen}`;
     // Mover la imagen
     file.mv( pathImg , (err: any) => {
         if (err){
@@ -46,7 +46,6 @@ export async function fileUpload(req: Request, res: Response): Promise<any> {
             mensaje: 'Archivo subido',
         });
     });
-
 }
 
 // Mostrar imagen
@@ -86,7 +85,6 @@ export async function download(req: Request, res: Response): Promise<any> {
     }
 
 }
-
 
 // Metodo para crear carpeta
 async function createFolder(folderPath: string) : Promise<any> {
